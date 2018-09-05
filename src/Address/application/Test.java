@@ -4,7 +4,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -37,6 +37,7 @@ public class Test {
 					for (columnindex = 0; columnindex <= cells; columnindex++) {
 						XSSFCell cell = row.getCell(columnindex);
 						String value = "";
+						TreeNode newNode = new TreeNode(value);
 						if (cell == null) {
 							continue;
 						} else {
@@ -58,11 +59,9 @@ public class Test {
 								break;
 							}
 						}
-						System.out.println("°¢ ¼¿  ³»¿ë:" + value);
-						addressTree.addNode(parentNode, value);
+						addressTree.addNode(parentNode, newNode);
 
 						parentNode = addressTree.getNode(parentNode, value);
-						System.out.println("Ok");
 					}
 				}
 			}
