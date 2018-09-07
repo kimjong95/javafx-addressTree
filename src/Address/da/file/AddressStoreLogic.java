@@ -3,31 +3,33 @@ package Address.da.file;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.poi.xssf.usermodel.XSSFCell;
-import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
+import Address.da.file.io.MemoryMapAddress;
 import Address.da.file.io.MemoryTreeAddress;
 import Address.store.AddressStore;
 import Address.util.AddressTree;
-import Address.util.TreeNode;
+import Address.util.Node;
 
 public class AddressStoreLogic implements AddressStore {
 	//
 	private AddressTree addressTree;
-	private Map<String, ArrayList<TreeNode>> addressMapDong;
-	private Map<String, ArrayList<TreeNode>> addressMapStructure;
+	private Map<String, ArrayList<Node>> addressMapDong;
+	private Map<String, ArrayList<Node>> addressMapStructure;
+	private List<Node> savedNodeList;
 
 	public AddressStoreLogic() {
 		//
 		this.addressTree = MemoryTreeAddress.getInstance().getAddressTree();
-		this.addressMapDong = new HashMap<>();
-		this.addressMapStructure = new HashMap<>();
+		this.addressMapDong = MemoryMapAddress.getInstance().getAddressDongMap();
+		this.addressMapStructure = MemoryMapAddress.getInstance().getAddressStructureMap();
+		this.savedNodeList = new ArrayList<>();
 	}
 
 	@Override
@@ -43,47 +45,51 @@ public class AddressStoreLogic implements AddressStore {
 
 			int rows = sheet.getPhysicalNumberOfRows();
 			for (rowindex = 1; rowindex < rows; rowindex++) {
-				TreeNode parentNode = addressTree.getRootNode();
-				XSSFRow row = sheet.getRow(rowindex);
+				Node parentNode = addressTree.getRootNode();
+				Row row = sheet.getRow(rowindex);
 				if (row != null) {
 					int cells = row.getPhysicalNumberOfCells();
 					for (columnindex = 0; columnindex <= cells; columnindex++) {
-						XSSFCell cell = row.getCell(columnindex);
+						Cell cell = row.getCell(columnindex);
 						String value = "";
-						ArrayList<TreeNode> nodeList = new ArrayList<>();
+						ArrayList<Node> nodeList = new ArrayList<>();
 
 						if (cell == null) {
 							continue;
 						} else {
-							switch (cell.getCellType()) {
-							case XSSFCell.CELL_TYPE_FORMULA:
+							switch (cell.getCellTypeEnum()) {
+							case FORMULA:
 								value = cell.getCellFormula();
 								break;
-							case XSSFCell.CELL_TYPE_NUMERIC:
+							case NUMERIC:
 								value = cell.getNumericCellValue() + "";
 								break;
-							case XSSFCell.CELL_TYPE_STRING:
+							case STRING:
 								value = cell.getStringCellValue() + "";
 								break;
-							case XSSFCell.CELL_TYPE_BLANK:
+							case BLANK:
 								value = cell.getBooleanCellValue() + "";
 								break;
-							case XSSFCell.CELL_TYPE_ERROR:
+							case ERROR:
 								value = cell.getErrorCellValue() + "";
+								break;
+							default:
 								break;
 							}
 						}
-						TreeNode newNode = new TreeNode(value);
+						Node newNode = new Node(value);
 
 						addressTree.addNode(parentNode, newNode);
 						parentNode = addressTree.getNode(parentNode, value);
-				
+
 						if (columnindex == 2) {
 							//
 							if (addressMapDong.containsKey(value)) {
 								nodeList = addressMapDong.get(value);
-								nodeList.add(newNode);
-								addressMapDong.put(value, nodeList);
+								if (isContainNode(newNode, nodeList)) {
+									nodeList.add(newNode);
+									addressMapDong.put(value, nodeList);
+								}
 							}
 
 							if (addressMapDong.get(value) == null) {
@@ -91,6 +97,7 @@ public class AddressStoreLogic implements AddressStore {
 								addressMapDong.put(value, nodeList);
 							}
 						}
+
 						if (columnindex == 3) {
 							//
 							if (addressMapStructure.containsKey(value)) {
@@ -108,48 +115,81 @@ public class AddressStoreLogic implements AddressStore {
 				}
 			}
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			// 
 			e.printStackTrace();
 		}
-//		for (int i = 0; i < addressMapStructure.get("교회").size(); i++) {
-//			System.out.println(addressMapStructure.get("교회").get(i).getValue());
-//			System.out.println(i);
-//		}
 	}
 
 	@Override
-	public List<String> retrieveAddress(String value) {
-		// 
-		if(value == null) {
-			throw new NullPointerException("nullPointerException");
-		}
-		
-		TreeNode findNode = addressTree.getNodeOfValue(value);
-		List<String> valueList = new ArrayList<>();
-		
-		for(TreeNode node : findNode.getChildNodes()) {
-			valueList.add(node.getValue());
+	public List<String> retrieveAddress(String[] values) {
+		//
+		Node findNode = addressTree.getRootNode();
+		List<String> addressList = new ArrayList<>();
+
+		for (String value : values) {
+
+			for (Node node : findNode.getChildNodes()) {
+				if (node.getValue().equals(value)) {
+
+					findNode = node;
+					break;
+				}
+			}
 		}
 
-		return valueList;
+		for (Node node : findNode.getChildNodes()) {
+			addressList.add(node.getValue());
+		}
+
+		return addressList;
 	}
 
 	@Override
-	public List<String> retrieveRootNodeChilds() {
-		// 
-		List<String> childList = new ArrayList<>();
-		for(TreeNode node : addressTree.getRootNode().getChildNodes()) {
-			childList.add(node.getValue());
-		}
-		
-		return childList;
+	public Node retrieveRootNodeChilds() {
+		//
+		return addressTree.getRootNode();
 	}
 
-//	private void addAddressInTree(TreeNode parentNode, TreeNode newNode) {
-//		//
-////		TreeNode newNode = new TreeNode(value);
-//
-//		addressTree.addNode(parentNode, newNode);
-//		parentNode = addressTree.getNode(parentNode, newNode.getValue());
-//	}
+	private boolean isContainNode(Node newNode, ArrayList<Node> list) {
+		//
+		boolean isContain = false;
+
+		for (Node node : list) {
+			if (node == newNode) {
+				isContain = true;
+			}
+		}
+		return isContain;
+	}
+
+	@Override
+	public List<Node> lookAddress(String key) {
+		//
+		List<Node> addressList = new ArrayList<>();
+
+		String subString = key.substring(key.length()-1);
+		
+		if (subString.equals("동")) {
+			addressList = addressMapDong.get(key);
+		} else {
+
+			addressList = addressMapStructure.get(key);
+		}
+		
+		savedNodeList = addressList;
+		return addressList;
+	}
+
+	@Override
+	public List<Node> retrieveNodeList(Node findNode) {
+		// 
+		List<Node> findNodeList = new ArrayList<>();
+		
+		for(Node node : findNode.getChildNodes()) {
+			findNodeList.add(node);
+		}
+		
+		return findNodeList;
+	}
+
 }

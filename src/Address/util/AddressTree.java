@@ -4,23 +4,22 @@ import java.util.List;
 
 public class AddressTree {
 	//
-	private TreeNode rootNode;
+	private Node rootNode;
 	private int size;
 
 	public AddressTree() {
 		//
-		rootNode = new TreeNode("");
+		rootNode = new Node("");
 		size = 1;
 	}
 
-	public TreeNode getRootNode() {
+	public Node getRootNode() {
 		//
 		return rootNode;
 	}
 
-	public void addNode(TreeNode parentNode, TreeNode newNode) {
+	public void addNode(Node parentNode, Node newNode) {
 		//
-//		TreeNode newNode = new TreeNode(value);
 
 		newNode.setParentNode(parentNode);
 
@@ -33,10 +32,10 @@ public class AddressTree {
 		size++;
 	}
 
-	public TreeNode getNode(TreeNode parentNode, String value) {
+	public Node getNode(Node parentNode, String value) {
 		//
-		List<TreeNode> childList = parentNode.getChildNodes();
-		for (TreeNode node : childList) {
+		List<Node> childList = parentNode.getChildNodes();
+		for (Node node : childList) {
 			if (node.getValue().equals(value)) {
 				return node;
 			}
@@ -44,74 +43,46 @@ public class AddressTree {
 		return null;
 	}
 
-	public TreeNode getNodeOfValue(String value) {
+	public Node getNodeOfValue(String value) {
 		//
-		TreeNode parentNode = rootNode;
-//		for(TreeNode node : rootNode.getChildNodes()) {
-//			if(node.getValue().equals(value)){
-//				parentNode = node;
-//			}
-//		}
-//		
-		TreeNode findNode = getNodeOfRecursion(parentNode, value);
+		Node parentNode = rootNode;
+
+		Node findNode = getNodeOfRecursion(parentNode, value);
 
 		return findNode;
 	}
 
-	public TreeNode getNodeOfRecursion(TreeNode node, String value) {
+	public Node getNodeOfRecursion(Node node, String value) {
 		//
-		TreeNode isGetNode = node;
-		System.out.println(node.getValue());
-		for (TreeNode findNode : node.getChildNodes()) {
-			
-			System.out.println(findNode.getValue());
+		Node isGetNode = node;
+		for (Node findNode : node.getChildNodes()) {
+
 			isGetNode = getNode(isGetNode, value);
-			if(isGetNode == null) {
+			if (isGetNode == null) {
+				
 				isGetNode = getNodeOfRecursion(findNode, value);
-				if(isGetNode != null) {
+				if (isGetNode != null) {
 					break;
 				}
 			} else {
 				return isGetNode;
-			}		
-//			if (findNode.getValue().equals(value)) {
-//				isGetNode = findNode;
-//			} else {
-//				if(!findNode.getChildNodes().isEmpty()) {
-//					isGetNode = getNodeOfChild(findNode, value);
-//				}
-//			}
-			
-//			if (isGetNode == null) {
-//				return isGetNode;
-//			}
-		}
+				}
+			}
+	
 		return isGetNode;
 	}
-
-//	public List<TreeNode> getNodes(TreeNode parentNode){
-//		//
-//		TreeNode findNode = rootNode;
-//		
-//		if(parentNode.equals(rootNode)) {
-//			return rootNode.getChildNodes();
-//		} else {
-//			return parentNode.get
-//		}
-//		
-//	}
 
 	public int size() {
 		//
 		return size;
 	}
 
-	private boolean isHaveNode(TreeNode parentNode, TreeNode findNode) {
+	private boolean isHaveNode(Node parentNode, Node findNode) {
 		//
 		boolean isHave = false;
 
-		List<TreeNode> childList = parentNode.getChildNodes();
-		for (TreeNode node : childList) {
+		List<Node> childList = parentNode.getChildNodes();
+		for (Node node : childList) {
 			if (node.getValue().equals(findNode.getValue())) {
 				isHave = true;
 			}

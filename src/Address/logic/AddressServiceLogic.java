@@ -1,10 +1,12 @@
 package Address.logic;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import Address.da.file.AddressStoreLogic;
 import Address.service.AddressService;
 import Address.store.AddressStore;
+import Address.util.Node;
 
 public class AddressServiceLogic implements AddressService {
 	//
@@ -22,16 +24,37 @@ public class AddressServiceLogic implements AddressService {
 	}
 
 	@Override
-	public List<String> findAddress(String value) {
+	public List<String> findAddress(String[] values) {
 		// 
 		
-		return addressStore.retrieveAddress(value);
+		return addressStore.retrieveAddress(values);
 	}
 
 	@Override
 	public List<String> findRootNodeChilds() {
-		// 
-		return addressStore.retrieveRootNodeChilds();
+		//
+		List<String> childList = new ArrayList<>();
+		Node findRootNode = addressStore.retrieveRootNodeChilds();
+		
+		for(Node node : findRootNode.getChildNodes()) {
+			childList.add(node.getValue());
+		}
+		
+		return childList;
 	}
+
+	@Override
+	public List<Node> searchAddress(String key) {
+		// 
+		return addressStore.lookAddress(key);
+	}
+
+	@Override
+	public List<Node> findNodeList(Node findNode) {
+		// 
+		return addressStore.retrieveNodeList(findNode);
+	}
+	
+
 
 }

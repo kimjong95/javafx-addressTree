@@ -4,20 +4,19 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import Address.util.TreeNode;
+import Address.util.Node;
 
 public class MemoryMapAddress {
 	//
 	private static MemoryMapAddress singletonMap; 
 	
-//	List<TreeNode> treeList;
-	
-	private Map<String, ArrayList<TreeNode>> addressMap;
+	private Map<String, ArrayList<Node>> addressDongMap;
+	private Map<String, ArrayList<Node>> addressStructureMap;
 	
 	public MemoryMapAddress() {
 		//
-//		this.treeList = new ArrayList<>();
-		this.addressMap = new HashMap<>();
+		this.addressDongMap = new HashMap<>();
+		this.addressStructureMap = new HashMap<>();
 	}
 	
 	public static MemoryMapAddress getInstance() {
@@ -29,8 +28,13 @@ public class MemoryMapAddress {
 		return singletonMap; 
 	}
 	
-	public Map<String, ArrayList<TreeNode>> getAddressMap() {
+	public Map<String, ArrayList<Node>> getAddressDongMap() {
 		// 
-		return this.addressMap; 
+		return this.addressDongMap; 
+	}
+	
+	public Map<String, ArrayList<Node>> getAddressStructureMap() {
+		// 
+		return this.addressStructureMap; 
 	}
 }
