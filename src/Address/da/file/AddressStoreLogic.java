@@ -3,6 +3,7 @@ package Address.da.file;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -22,14 +23,12 @@ public class AddressStoreLogic implements AddressStore {
 	private AddressTree addressTree;
 	private Map<String, ArrayList<Node>> addressMapDong;
 	private Map<String, ArrayList<Node>> addressMapStructure;
-	private List<Node> savedNodeList;
 
 	public AddressStoreLogic() {
 		//
 		this.addressTree = MemoryTreeAddress.getInstance().getAddressTree();
 		this.addressMapDong = MemoryMapAddress.getInstance().getAddressDongMap();
 		this.addressMapStructure = MemoryMapAddress.getInstance().getAddressStructureMap();
-		this.savedNodeList = new ArrayList<>();
 	}
 
 	@Override
@@ -84,6 +83,8 @@ public class AddressStoreLogic implements AddressStore {
 
 						if (columnindex == 2) {
 							//
+//							inputValuesInMap(addressMapDong, newNode, value);
+							
 							if (addressMapDong.containsKey(value)) {
 								nodeList = addressMapDong.get(value);
 								if (isContainNode(newNode, nodeList)) {
@@ -100,6 +101,7 @@ public class AddressStoreLogic implements AddressStore {
 
 						if (columnindex == 3) {
 							//
+//							inputValuesInMap(addressMapStructure, newNode, value);
 							if (addressMapStructure.containsKey(value)) {
 								nodeList = addressMapStructure.get(value);
 								nodeList.add(newNode);
@@ -176,7 +178,6 @@ public class AddressStoreLogic implements AddressStore {
 			addressList = addressMapStructure.get(key);
 		}
 		
-		savedNodeList = addressList;
 		return addressList;
 	}
 
@@ -191,5 +192,22 @@ public class AddressStoreLogic implements AddressStore {
 		
 		return findNodeList;
 	}
+	
+	private void inputValuesInMap(Map<String, ArrayList<Node>> map,Node newNode,  String value) {
+		//
+		ArrayList<Node> nodeList = new ArrayList<>();
+		
+		if (map.containsKey(value)) {
+			nodeList = map.get(value);
+			if (isContainNode(newNode, nodeList)) {
+				nodeList.add(newNode);
+				map.put(value, nodeList);
+			}
+		}
 
+		if (map.get(value) == null) {
+			nodeList.add(newNode);
+			map.put(value, nodeList);
+		}
+	}
 }

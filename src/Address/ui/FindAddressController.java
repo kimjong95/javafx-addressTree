@@ -179,6 +179,9 @@ public class FindAddressController implements Initializable {
 		//
 		Node getTreeNode = structureTableView.getSelectionModel().getSelectedItem();
 		
+		dongTableView.getItems().clear();
+		dongTableView.getItems().add(getTreeNode.getParentNode());
+
 		addressArray[0] = getTreeNode.getParentNode().getParentNode().getParentNode().getValue();
 		addressArray[1] = getTreeNode.getParentNode().getParentNode().getValue();
 		addressArray[2] = getTreeNode.getParentNode().getValue();
@@ -204,7 +207,9 @@ public class FindAddressController implements Initializable {
 
 	@FXML
 	private void oKButton(ActionEvent evnet) {
-
+		//
+		System.out.println(detailAddressTextField.getText());
+		System.exit(0);
 	}
 
 	private void arrayRebuild(String[] array, int index) {
