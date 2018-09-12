@@ -8,16 +8,16 @@ import java.util.ResourceBundle;
 import Address.logic.AddressServiceLogic;
 import Address.service.AddressService;
 import Address.util.Node;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.ListView;
+import javafx.scene.control.RadioButton;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 
 public class FindAddressController implements Initializable {
@@ -28,16 +28,14 @@ public class FindAddressController implements Initializable {
 	@FXML
 	private TextField detailAddressTextField;
 
-	// ListView
+	// CheckBox
 	@FXML
-	private ListView<String> siListView;
+	private RadioButton dongRadioButton;
 	@FXML
-	private ListView<String> guListView;
+	private RadioButton structureRadioButton;
 	@FXML
-	private ListView<String> dongListView;
-	@FXML
-	private ListView<String> structureListView;
-	
+	private ToggleGroup searchType;
+
 	// TableView
 	@FXML
 	private TableView<Node> dongTableView;
@@ -47,25 +45,31 @@ public class FindAddressController implements Initializable {
 	private TableView<Node> structureTableView;
 	@FXML
 	private TableColumn<Node, String> structureTableColumn;
-	
+	@FXML
+	private TableView<Node> siTableView;
+	@FXML
+	private TableColumn<Node, String> siTableColumn;
+	@FXML
+	private TableView<Node> guTableView;
+	@FXML
+	private TableColumn<Node, String> guTableColumn;
+	@FXML
+	private TableView<Node> searchTableView;
+	@FXML
+	private TableColumn<Node, String> searchTableColumn;
+
 	// Button
 
 	private AddressService addressService;
-	private List<String> treeNodeList;
 	private List<Node> tempNodeList;
-	private ObservableList<String> listSi;
-	private ObservableList<String> listGu;
-	private ObservableList<String> listDong;
-	private ObservableList<String> listStructure;
 
-	private String[] addressArray;
+	private List<String> addressArray;
 	private String si, gu, dong, structure;
 
 	public FindAddressController() {
 		//
 		this.addressService = new AddressServiceLogic();
-		this.addressArray = new String[4];
-		this.treeNodeList = new ArrayList<>();
+		this.addressArray = new ArrayList<>();
 		this.tempNodeList = new ArrayList<>();
 	}
 
@@ -74,136 +78,120 @@ public class FindAddressController implements Initializable {
 		//
 		this.dongTableColumn.setCellValueFactory(new PropertyValueFactory<Node, String>("value"));
 		this.structureTableColumn.setCellValueFactory(new PropertyValueFactory<Node, String>("value"));
-		
-//		treeNodeList = FXCollections.observableArrayList();
-		tempNodeList = FXCollections.observableArrayList();
-		listSi = FXCollections.observableArrayList();
-		listGu = FXCollections.observableArrayList();
-		listDong = FXCollections.observableArrayList();
-		listStructure = FXCollections.observableArrayList();
+		this.siTableColumn.setCellValueFactory(new PropertyValueFactory<Node, String>("value"));
+		this.guTableColumn.setCellValueFactory(new PropertyValueFactory<Node, String>("value"));
+		this.searchTableColumn.setCellValueFactory(new PropertyValueFactory<Node, String>("value"));
 
-		siListView.setItems(FXCollections.observableArrayList());
-
-		treeNodeList = addressService.findRootNodeChilds();
-		listSi.addAll(treeNodeList);
-		siListView.getItems().addAll(treeNodeList);
+		this.dongRadioButton.setSelected(true);
+		tempNodeList = addressService.findRootNode().getChildNodes();
+		siTableView.getItems().addAll(tempNodeList);
 	}
 
 	@FXML
 	private void findSi(MouseEvent evnet) {
 		//
-		guListView.getItems().clear();
-		dongListView.getItems().clear();
-		structureListView.getItems().clear();
-		treeNodeList = new ArrayList<>();
-		String selectSi = siListView.getSelectionModel().getSelectedItem();
+		guTableView.getItems().clear();
+		dongTableView.getItems().clear();
+		structureTableView.getItems().clear();
+		Node getTreeNode = siTableView.getSelectionModel().getSelectedItem();
 
-		si = selectSi;
-		addressArray[0] = selectSi;
-		arrayRebuild(addressArray, 0);
+		tempNodeList = getTreeNode.getChildNodes();
 
-		detailAddressTextField.setText(si);
+		guTableView.getItems().addAll(tempNodeList);
 
-		treeNodeList = addressService.findAddress(addressArray);
-		listGu.addAll(treeNodeList);
-		guListView.getItems().addAll(treeNodeList);
 	}
 
 	@FXML
 	private void findGu(MouseEvent evnet) {
 		//
-		dongListView.getItems().clear();
-		structureListView.getItems().clear();
-		treeNodeList = new ArrayList<>();
-		String selectGu = guListView.getSelectionModel().getSelectedItem();
+		dongTableView.getItems().clear();
+		structureTableView.getItems().clear();
+		Node getTreeNode = guTableView.getSelectionModel().getSelectedItem();
 
-		gu = selectGu;
-		addressArray[1] = selectGu;
-		arrayRebuild(addressArray, 1);
+		tempNodeList = getTreeNode.getChildNodes();
 
-		detailAddressTextField.setText(si + gu);
-		treeNodeList = addressService.findAddress(addressArray);
-		listDong.addAll(treeNodeList);
-		dongListView.getItems().addAll(treeNodeList);
+		dongTableView.getItems().addAll(tempNodeList);
 	}
 
 	@FXML
 	private void findDong(MouseEvent evnet) {
 		//
-		structureListView.getItems().clear();
-		treeNodeList = new ArrayList<>();
-		String selectDong = dongListView.getSelectionModel().getSelectedItem();
+		structureTableView.getItems().clear();
+		Node getTreeNode = dongTableView.getSelectionModel().getSelectedItem();
 
-		dong = selectDong;
-		addressArray[2] = selectDong;
-		arrayRebuild(addressArray, 2);
-		
-		detailAddressTextField.setText(si + gu + dong);
-		treeNodeList = addressService.findAddress(addressArray);
-		listStructure.addAll(treeNodeList);
-		structureListView.getItems().addAll(treeNodeList);
+		tempNodeList = getTreeNode.getChildNodes();
+
+		structureTableView.getItems().addAll(tempNodeList);
 	}
 
 	@FXML
 	private void findStructure(MouseEvent evnet) {
 		//
-		treeNodeList = new ArrayList<>();
-		String selectStructure = structureListView.getSelectionModel().getSelectedItem();
-
-		structure = selectStructure;
-		addressArray[3] = selectStructure;
-
-		detailAddressTextField.setText(si + gu + dong + structure);
+//		treeNodeList = new ArrayList<>();
+//		String selectStructure = structureListView.getSelectionModel().getSelectedItem();
+//
+//		structure = selectStructure;
+//		addressArray[3] = selectStructure;
+//
+//		detailAddressTextField.setText(si + gu + dong + structure);
 	}
 
 	@FXML
-	private void searchDong(MouseEvent evnet) {
+	private void search(MouseEvent evnet) {
 		//
-		structureTableView.getItems().clear();
-		Node getTreeNode = dongTableView.getSelectionModel().getSelectedItem();
-		
-		tempNodeList = getTreeNode.getChildNodes();
-		
-		structureTableView.getItems().addAll(tempNodeList);
-		
-		addressArray[0] = getTreeNode.getParentNode().getParentNode().getValue();
-		addressArray[1] = getTreeNode.getParentNode().getValue();
-		addressArray[2] = getTreeNode.getValue();
-		arrayRebuild(addressArray, 2);
-		
-		detailAddressTextField.setText(addressArray[0]+addressArray[1]+addressArray[2]);
-	}
-
-	@FXML
-	private void searchStructure(MouseEvent evnet) {
-		//
-		Node getTreeNode = structureTableView.getSelectionModel().getSelectedItem();
-		
+		siTableView.getItems().clear();
+		guTableView.getItems().clear();
 		dongTableView.getItems().clear();
-		dongTableView.getItems().add(getTreeNode.getParentNode());
-
-		addressArray[0] = getTreeNode.getParentNode().getParentNode().getParentNode().getValue();
-		addressArray[1] = getTreeNode.getParentNode().getParentNode().getValue();
-		addressArray[2] = getTreeNode.getParentNode().getValue();
-		addressArray[3] = getTreeNode.getValue();
+		structureTableView.getItems().clear();
 		
-		detailAddressTextField.setText(addressArray[0]+addressArray[1]+addressArray[2]+addressArray[3]);
+		Node getTreeNode = searchTableView.getSelectionModel().getSelectedItem();
+		
+		if(dongRadioButton.isSelected()) {
+			dongTableView.getItems().addAll(getTreeNode);
+			guTableView.getItems().addAll(getTreeNode.getParentNode());
+			siTableView.getItems().addAll(getTreeNode.getParentNode().getParentNode());
+		} else {
+			structureTableView.getItems().addAll(getTreeNode);
+			dongTableView.getItems().addAll(getTreeNode.getParentNode());
+			guTableView.getItems().addAll(getTreeNode.getParentNode().getParentNode());
+			siTableView.getItems().addAll(getTreeNode.getParentNode().getParentNode().getParentNode());
+		}
+		
+		
 	}
 
 	@FXML
-	private void searchButton(ActionEvent evnet) {
-		//		
-		String address = searchAddressTextField.getText();
-		
-		tempNodeList = addressService.searchAddress(address);
-		String subString = address.substring(address.length() - 1);
-		
-		if (subString.equals("µø")) {
-			dongTableView.getItems().addAll(tempNodeList);
-		} else {
-			structureTableView.getItems().addAll(tempNodeList);
-		}
+	private void searchButton(KeyEvent event) {
+		//
+		searchTableView.getItems().clear();
+
+		String searchAddress = searchAddressTextField.getText();
+
+		String searchType = checkSearchType(event);
+
+		tempNodeList = addressService.searchAddress(searchAddress, searchType);
+
+		searchTableView.getItems().addAll(tempNodeList);
+
 	}
+
+//	@FXML
+//	private void searchButton(ActionEvent evnet) {
+//		//		
+//		dongTableView.getItems().clear();
+//		structureTableView.getItems().clear();
+//		
+//		String address = searchAddressTextField.getText();
+//		
+//		tempNodeList = addressService.searchAddress(address);
+//		String subString = address.substring(address.length() - 1);
+//		
+//		if (subString.equals("Îèô")) {
+//			dongTableView.getItems().addAll(tempNodeList);
+//		} else {
+//			structureTableView.getItems().addAll(tempNodeList);
+//		}
+//	}
 
 	@FXML
 	private void oKButton(ActionEvent evnet) {
@@ -212,10 +200,13 @@ public class FindAddressController implements Initializable {
 		System.exit(0);
 	}
 
-	private void arrayRebuild(String[] array, int index) {
-		//
-		for (int i = index + 1; i < array.length; i++) {
-			array[i] = null;
+	@FXML
+	private String checkSearchType(KeyEvent event) {
+		if (dongRadioButton.isSelected()) {
+			return "dong";
+		} else {
+			return "structure";
 		}
 	}
+
 }

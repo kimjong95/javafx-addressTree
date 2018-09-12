@@ -8,11 +8,12 @@ public interface AddressService {
 	//
 	public void addAddress();
 
-	public List<String> findAddress(String[] values);
+	public List<Node> findAddress(String[] values);
 	
-	public List<String> findRootNodeChilds();
+	public Node findRootNode();
 	
-	public List<Node> searchAddress(String key);
+	public List<Node> searchAddress(String key, String searchType);
 	
 	public List<Node> findNodeList(Node findNode);
+	
 }

@@ -24,29 +24,22 @@ public class AddressServiceLogic implements AddressService {
 	}
 
 	@Override
-	public List<String> findAddress(String[] values) {
+	public List<Node> findAddress(String[] values) {
 		// 
 		
 		return addressStore.retrieveAddress(values);
 	}
 
 	@Override
-	public List<String> findRootNodeChilds() {
+	public Node findRootNode() {
 		//
-		List<String> childList = new ArrayList<>();
-		Node findRootNode = addressStore.retrieveRootNodeChilds();
-		
-		for(Node node : findRootNode.getChildNodes()) {
-			childList.add(node.getValue());
-		}
-		
-		return childList;
+		return addressStore.retrieveRootNode();
 	}
 
 	@Override
-	public List<Node> searchAddress(String key) {
+	public List<Node> searchAddress(String key, String searchType) {
 		// 
-		return addressStore.lookAddress(key);
+		return addressStore.lookAddress(key, searchType);
 	}
 
 	@Override
