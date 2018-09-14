@@ -7,7 +7,7 @@ import java.util.ResourceBundle;
 
 import Address.logic.AddressServiceLogic;
 import Address.service.AddressService;
-import Address.util.Node;
+import Address.util.TreeNode;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -38,49 +38,43 @@ public class FindAddressController implements Initializable {
 
 	// TableView
 	@FXML
-	private TableView<Node> dongTableView;
+	private TableView<TreeNode> dongTableView;
 	@FXML
-	private TableColumn<Node, String> dongTableColumn;
+	private TableColumn<TreeNode, String> dongTableColumn;
 	@FXML
-	private TableView<Node> structureTableView;
+	private TableView<TreeNode> structureTableView;
 	@FXML
-	private TableColumn<Node, String> structureTableColumn;
+	private TableColumn<TreeNode, String> structureTableColumn;
 	@FXML
-	private TableView<Node> siTableView;
+	private TableView<TreeNode> siTableView;
 	@FXML
-	private TableColumn<Node, String> siTableColumn;
+	private TableColumn<TreeNode, String> siTableColumn;
 	@FXML
-	private TableView<Node> guTableView;
+	private TableView<TreeNode> guTableView;
 	@FXML
-	private TableColumn<Node, String> guTableColumn;
+	private TableColumn<TreeNode, String> guTableColumn;
 	@FXML
-	private TableView<Node> searchTableView;
+	private TableView<TreeNode> searchTableView;
 	@FXML
-	private TableColumn<Node, String> searchTableColumn;
-
-	// Button
+	private TableColumn<TreeNode, String> searchTableColumn;
 
 	private AddressService addressService;
-	private List<Node> tempNodeList;
-
-	private List<String> addressArray;
-	private String si, gu, dong, structure;
+	private List<TreeNode> tempNodeList;
 
 	public FindAddressController() {
 		//
 		this.addressService = new AddressServiceLogic();
-		this.addressArray = new ArrayList<>();
 		this.tempNodeList = new ArrayList<>();
 	}
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		//
-		this.dongTableColumn.setCellValueFactory(new PropertyValueFactory<Node, String>("value"));
-		this.structureTableColumn.setCellValueFactory(new PropertyValueFactory<Node, String>("value"));
-		this.siTableColumn.setCellValueFactory(new PropertyValueFactory<Node, String>("value"));
-		this.guTableColumn.setCellValueFactory(new PropertyValueFactory<Node, String>("value"));
-		this.searchTableColumn.setCellValueFactory(new PropertyValueFactory<Node, String>("value"));
+		this.dongTableColumn.setCellValueFactory(new PropertyValueFactory<TreeNode, String>("value"));
+		this.structureTableColumn.setCellValueFactory(new PropertyValueFactory<TreeNode, String>("value"));
+		this.siTableColumn.setCellValueFactory(new PropertyValueFactory<TreeNode, String>("value"));
+		this.guTableColumn.setCellValueFactory(new PropertyValueFactory<TreeNode, String>("value"));
+		this.searchTableColumn.setCellValueFactory(new PropertyValueFactory<TreeNode, String>("value"));
 
 		this.dongRadioButton.setSelected(true);
 		tempNodeList = addressService.findRootNode().getChildNodes();
@@ -93,12 +87,13 @@ public class FindAddressController implements Initializable {
 		guTableView.getItems().clear();
 		dongTableView.getItems().clear();
 		structureTableView.getItems().clear();
-		Node getTreeNode = siTableView.getSelectionModel().getSelectedItem();
+		TreeNode getTreeNode = siTableView.getSelectionModel().getSelectedItem();
 
 		tempNodeList = getTreeNode.getChildNodes();
 
 		guTableView.getItems().addAll(tempNodeList);
-
+		
+		detailAddressTextField.setText(getTreeNode.getValue());
 	}
 
 	@FXML
@@ -106,34 +101,49 @@ public class FindAddressController implements Initializable {
 		//
 		dongTableView.getItems().clear();
 		structureTableView.getItems().clear();
-		Node getTreeNode = guTableView.getSelectionModel().getSelectedItem();
+		TreeNode getTreeNode = guTableView.getSelectionModel().getSelectedItem();
 
 		tempNodeList = getTreeNode.getChildNodes();
 
 		dongTableView.getItems().addAll(tempNodeList);
+		
+		StringBuilder builder = new StringBuilder();
+		builder.append(getTreeNode.getParentNode().getValue()).append(" ");
+		builder.append(getTreeNode.getValue());
+		
+		detailAddressTextField.setText(builder.toString());
 	}
 
 	@FXML
 	private void findDong(MouseEvent evnet) {
 		//
 		structureTableView.getItems().clear();
-		Node getTreeNode = dongTableView.getSelectionModel().getSelectedItem();
+		TreeNode getTreeNode = dongTableView.getSelectionModel().getSelectedItem();
 
 		tempNodeList = getTreeNode.getChildNodes();
 
 		structureTableView.getItems().addAll(tempNodeList);
+		
+		StringBuilder builder = new StringBuilder();
+		builder.append(getTreeNode.getParentNode().getParentNode().getValue()).append(" ");
+		builder.append(getTreeNode.getParentNode().getValue()).append(" ");
+		builder.append(getTreeNode.getValue());
+		
+		detailAddressTextField.setText(builder.toString());
 	}
 
 	@FXML
 	private void findStructure(MouseEvent evnet) {
 		//
-//		treeNodeList = new ArrayList<>();
-//		String selectStructure = structureListView.getSelectionModel().getSelectedItem();
-//
-//		structure = selectStructure;
-//		addressArray[3] = selectStructure;
-//
-//		detailAddressTextField.setText(si + gu + dong + structure);
+		TreeNode getTreeNode = structureTableView.getSelectionModel().getSelectedItem();
+		
+		StringBuilder builder = new StringBuilder();
+		builder.append(getTreeNode.getParentNode().getParentNode().getParentNode().getValue()).append(" ");
+		builder.append(getTreeNode.getParentNode().getParentNode().getValue()).append(" ");
+		builder.append(getTreeNode.getParentNode().getValue()).append(" ");
+		builder.append(getTreeNode.getValue());
+		
+		detailAddressTextField.setText(builder.toString());
 	}
 
 	@FXML
@@ -144,7 +154,7 @@ public class FindAddressController implements Initializable {
 		dongTableView.getItems().clear();
 		structureTableView.getItems().clear();
 		
-		Node getTreeNode = searchTableView.getSelectionModel().getSelectedItem();
+		TreeNode getTreeNode = searchTableView.getSelectionModel().getSelectedItem();
 		
 		if(dongRadioButton.isSelected()) {
 			dongTableView.getItems().addAll(getTreeNode);
@@ -161,10 +171,10 @@ public class FindAddressController implements Initializable {
 	}
 
 	@FXML
-	private void searchButton(KeyEvent event) {
+	private void searchKeyPressed(KeyEvent event) {
 		//
 		searchTableView.getItems().clear();
-
+		
 		String searchAddress = searchAddressTextField.getText();
 
 		String searchType = checkSearchType(event);
@@ -174,24 +184,6 @@ public class FindAddressController implements Initializable {
 		searchTableView.getItems().addAll(tempNodeList);
 
 	}
-
-//	@FXML
-//	private void searchButton(ActionEvent evnet) {
-//		//		
-//		dongTableView.getItems().clear();
-//		structureTableView.getItems().clear();
-//		
-//		String address = searchAddressTextField.getText();
-//		
-//		tempNodeList = addressService.searchAddress(address);
-//		String subString = address.substring(address.length() - 1);
-//		
-//		if (subString.equals("동")) {
-//			dongTableView.getItems().addAll(tempNodeList);
-//		} else {
-//			structureTableView.getItems().addAll(tempNodeList);
-//		}
-//	}
 
 	@FXML
 	private void oKButton(ActionEvent evnet) {
@@ -208,5 +200,4 @@ public class FindAddressController implements Initializable {
 			return "structure";
 		}
 	}
-
 }

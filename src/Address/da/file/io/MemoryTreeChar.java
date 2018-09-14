@@ -6,11 +6,13 @@ public class MemoryTreeChar {
 	//
 	private static MemoryTreeChar singletonMap; 
 	
-	private CharTree addressTree;
+	private CharTree dongCharTree;
+	private CharTree structureCharTree;
 	
 	public MemoryTreeChar() {
 		//
-		this.addressTree = new CharTree();
+		this.dongCharTree = new CharTree();
+		this.structureCharTree = new CharTree();
 	}
 	
 	public static MemoryTreeChar getInstance() {
@@ -22,8 +24,13 @@ public class MemoryTreeChar {
 		return singletonMap; 
 	}
 	
-	public CharTree getCharTree() {
+	public CharTree getDongCharTree() {
 		// 
-		return this.addressTree; 
+		return this.dongCharTree; 
+	}
+	
+	public CharTree getStructureCharTree() {
+		// 
+		return this.structureCharTree; 
 	}
 }

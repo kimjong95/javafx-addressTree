@@ -4,21 +4,21 @@ import java.util.List;
 
 public class AddressTree {
 	//
-	private Node rootNode;
+	private TreeNode rootNode;
 	private int size;
 
 	public AddressTree() {
 		//
-		rootNode = new Node("");
+		rootNode = new TreeNode("");
 		size = 1;
 	}
 
-	public Node getRootNode() {
+	public TreeNode getRootNode() {
 		//
 		return rootNode;
 	}
 
-	public void addNode(Node parentNode, Node newNode) {
+	public void addNode(TreeNode parentNode, TreeNode newNode) {
 		//
 
 		newNode.setParentNode(parentNode);
@@ -32,10 +32,10 @@ public class AddressTree {
 		size++;
 	}
 
-	public Node getNode(Node parentNode, String value) {
+	public TreeNode getNode(TreeNode parentNode, String value) {
 		//
-		List<Node> childList = parentNode.getChildNodes();
-		for (Node node : childList) {
+		List<TreeNode> childList = parentNode.getChildNodes();
+		for (TreeNode node : childList) {
 			if (node.getValue().equals(value)) {
 				return node;
 			}
@@ -43,19 +43,19 @@ public class AddressTree {
 		return null;
 	}
 
-	public Node getNodeOfValue(String value) {
+	public TreeNode getNodeOfValue(String value) {
 		//
-		Node parentNode = rootNode;
+		TreeNode parentNode = rootNode;
 
-		Node findNode = getNodeOfRecursion(parentNode, value);
+		TreeNode findNode = getNodeOfRecursion(parentNode, value);
 
 		return findNode;
 	}
 
-	public Node getNodeOfRecursion(Node node, String value) {
+	public TreeNode getNodeOfRecursion(TreeNode node, String value) {
 		//
-		Node isGetNode = node;
-		for (Node findNode : node.getChildNodes()) {
+		TreeNode isGetNode = node;
+		for (TreeNode findNode : node.getChildNodes()) {
 
 			isGetNode = getNode(isGetNode, value);
 			if (isGetNode == null) {
@@ -77,12 +77,12 @@ public class AddressTree {
 		return size;
 	}
 
-	private boolean isHaveNode(Node parentNode, Node findNode) {
+	private boolean isHaveNode(TreeNode parentNode, TreeNode findNode) {
 		//
 		boolean isHave = false;
 
-		List<Node> childList = parentNode.getChildNodes();
-		for (Node node : childList) {
+		List<TreeNode> childList = parentNode.getChildNodes();
+		for (TreeNode node : childList) {
 			if (node.getValue().equals(findNode.getValue())) {
 				isHave = true;
 			}

@@ -2,18 +2,12 @@ package Address.service;
 
 import java.util.List;
 
-import Address.util.Node;
+import Address.util.TreeNode;
 
 public interface AddressService {
 	//
 	public void addAddress();
-
-	public List<Node> findAddress(String[] values);
-	
-	public Node findRootNode();
-	
-	public List<Node> searchAddress(String key, String searchType);
-	
-	public List<Node> findNodeList(Node findNode);
+	public TreeNode findRootNode();
+	public List<TreeNode> searchAddress(String key, String searchType);
 	
 }

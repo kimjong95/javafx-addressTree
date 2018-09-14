@@ -3,20 +3,20 @@ package Address.util;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Node {
+public class TreeNode {
 	//
-	private Node parentNode;
+	private TreeNode parentNode;
 	private String value;
-	private List<Node> childNodes;
+	private List<TreeNode> childNodes;
 
-	public Node(String newValue) {
+	public TreeNode(String newValue) {
 		//
 		value = newValue;
 		parentNode = null;
 		childNodes = new ArrayList<>();
 	}
 
-	public void addChild(Node childNode) {
+	public void addChild(TreeNode childNode) {
 		//
 		childNode.parentNode = this;
 		childNodes.add(childNode);
@@ -27,17 +27,17 @@ public class Node {
 		return value;
 	}
 	
-	public Node getParentNode() {
+	public TreeNode getParentNode() {
 		//
 		return parentNode;
 	}
 	
-	public void setParentNode(Node setParentNode) {
+	public void setParentNode(TreeNode setParentNode) {
 		//
 		this.parentNode = setParentNode;
 	}
 	
-	public List<Node> getChildNodes(){
+	public List<TreeNode> getChildNodes(){
 		//
 		return childNodes;
 	}

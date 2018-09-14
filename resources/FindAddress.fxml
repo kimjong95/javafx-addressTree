@@ -18,7 +18,7 @@
           <TableColumn fx:id="searchTableColumn" prefWidth="573.6000198364258" text="검색결과" />
         </columns>
       </TableView>
-      <TextField fx:id="searchAddressTextField" layoutX="54.0" layoutY="43.0" onKeyTyped="#searchButton" prefHeight="23.0" prefWidth="570.0" />
+      <TextField fx:id="searchAddressTextField" layoutX="54.0" layoutY="43.0" onKeyTyped="#searchKeyPressed" prefHeight="23.0" prefWidth="570.0" />
       <TextField fx:id="detailAddressTextField" layoutX="54.0" layoutY="563.0" prefHeight="23.0" prefWidth="570.0" />
       <Text layoutX="55.0" layoutY="94.0" strokeType="OUTSIDE" strokeWidth="0.0" text="항목을 선택해 주세요 : " />
       <fx:define>
